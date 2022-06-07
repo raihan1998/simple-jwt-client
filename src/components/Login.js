@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const inputStyle = {
   width: "100%",
@@ -7,8 +8,32 @@ const inputStyle = {
 };
 
 const Login = () => {
+  const navigate = useNavigate();
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+
+    fetch("http://localhost:5000/login", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          localStorage.setItem("accessToken", data.accessToken);
+          navigate('/orders');
+        }
+        console.log(data);
+      });
+  };
+
   return (
-    <form style={{ width: "50%", margin: "20px auto" }}>
+    <form onSubmit={handleLogin} style={{ width: "50%", margin: "20px auto" }}>
       <input
         style={inputStyle}
         type="email"
